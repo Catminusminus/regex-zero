@@ -52,7 +52,7 @@ fn main() -> Result<(), DynError> {
 #[cfg(test)]
 mod tests {
     use crate::{
-        engine::do_matching,
+        engine::{do_matching, do_matching_with_cache},
         helper::{safe_add, SafeAdd},
     };
     #[test]
@@ -88,5 +88,24 @@ mod tests {
         assert!(!do_matching("abc|def", "efa", true).unwrap());
         assert!(!do_matching("(ab|cd)+", "", true).unwrap());
         assert!(!do_matching("abc?", "acb", true).unwrap());
+    }
+    #[test]
+    fn test_matching_with_cache() {
+        // Parse Errors
+        assert!(do_matching_with_cache("+b", "bbb", true).is_err());
+        assert!(do_matching_with_cache("*b", "bbb", true).is_err());
+        assert!(do_matching_with_cache("|b", "bbb", true).is_err());
+        assert!(do_matching_with_cache("?b", "bbb", true).is_err());
+
+        // Parse OK and Match OK
+        assert!(do_matching_with_cache("abc|def", "def", true).unwrap());
+        assert!(do_matching_with_cache("(abc)*", "abcabc", true).unwrap());
+        assert!(do_matching_with_cache("(ab|cd)+", "abcdcd", true).unwrap());
+        assert!(do_matching_with_cache("abc?", "ab", true).unwrap());
+
+        // Parse OK and Match NG
+        assert!(!do_matching_with_cache("abc|def", "efa", true).unwrap());
+        assert!(!do_matching_with_cache("(ab|cd)+", "", true).unwrap());
+        assert!(!do_matching_with_cache("abc?", "acb", true).unwrap());
     }
 }

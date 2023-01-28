@@ -12,4 +12,4 @@
 mod engine;
 mod helper;
 
-pub use engine::{do_matching, print};
+pub use engine::{do_matching, do_matching_with_cache, print};

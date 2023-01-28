@@ -50,6 +50,13 @@ pub fn do_matching(expr: &str, line: &str, is_depth: bool) -> Result<bool, DynEr
     Ok(evaluator::eval(&code, &line, is_depth)?)
 }
 
+pub fn do_matching_with_cache(expr: &str, line: &str, is_depth: bool) -> Result<bool, DynError> {
+    let ast = parser::parse(&expr)?;
+    let code = codegen::get_code(&ast)?;
+    let line = line.chars().collect::<Vec<char>>();
+    Ok(evaluator::eval_with_cache(&code, &line, is_depth)?)
+}
+
 pub fn print(expr: &str) -> Result<(), DynError> {
     println!("expr: {expr}");
     let ast = parser::parse(expr)?;
